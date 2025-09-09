@@ -1,0 +1,21 @@
+# API
+fastapi
+uvicorn[standard]
+
+# RAG core
+embedchain
+chromadb>=0.5
+
+# Models & uploads
+pydantic>=2.7,<3
+python-multipart
+
+# PDF text extraction (Embedchain uses this under the hood; ensure it's present)
+pypdf>=4
+
+# LLM provider used by Embedchain (set OPENAI_API_KEY in env)
+openai>=1.0
+
+# Optional: if you switch to a managed vector DB later, uncomment:
+# qdrant-client
+
