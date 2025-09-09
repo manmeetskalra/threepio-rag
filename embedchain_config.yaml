@@ -1,0 +1,31 @@
+app:
+  config:
+    name: pdf-rag
+
+llm:
+  provider: openai
+  config:
+    model: gpt-4o-mini
+    temperature: 0.0
+    max_tokens: 512
+    number_documents: 6
+    system_prompt: |
+      You must only use the provided context to answer.
+      If unsupported, reply exactly: "I don't know based on the provided PDF."
+
+embedder:
+  provider: openai
+  config:
+    model: text-embedding-3-small
+
+vectordb:
+  provider: chroma
+  config:
+    collection_name: pdf_rag_demo
+    dir: /Users/manme/Desktop/code/threepio-rag/chroma_store   # absolute path
+
+chunker:
+  chunk_size: 1200
+  chunk_overlap: 150
+  min_chunk_size: 300
+
