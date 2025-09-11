@@ -1,13 +1,15 @@
-
 import os
 import tempfile
 from fastapi import FastAPI, UploadFile, File, Form, Query, HTTPException
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from embedchain import App
 import chromadb, logging
 
-CHROMA_DIR = "/Users/manme/Desktop/code/threepio-rag/chroma_store"
+SAHARSH_ROOT = "/Users/saharshsamir/Desktop/everything/code/threepio-rag"
+MANME_ROOT = "/Users/manme/Desktop/code/threepio-rag"
+CHROMA_DIR = SAHARSH_ROOT + "/chroma_store"
 COLL_NAME  = "pdf_rag_demo"
 
 # Create/load the RAG app
@@ -21,6 +23,15 @@ STRICT_SYSTEM = (
 )
 
 app = FastAPI(title="PDF Q&A (Embedchain)")
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],  # Next.js default port
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 class AskBody(BaseModel):
     question: str

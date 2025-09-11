@@ -35,10 +35,9 @@ import {
 	SourcesTrigger,
 } from "@/components/ui/blocks/ai/source";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import { MicIcon, PaperclipIcon, RotateCcwIcon } from "lucide-react";
 import { nanoid } from "nanoid";
-import { type FormEventHandler, useCallback, useEffect, useState } from "react";
+import { type FormEventHandler, useCallback, useState } from "react";
 type ChatMessage = {
 	id: string;
 	content: string;
@@ -53,47 +52,6 @@ const models = [
 	{ id: "claude-3-5-sonnet", name: "Claude 3.5 Sonnet" },
 	{ id: "gemini-1.5-pro", name: "Gemini 1.5 Pro" },
 	{ id: "llama-3.1-70b", name: "Llama 3.1 70B" },
-];
-const sampleResponses = [
-	{
-		content:
-			"I'd be happy to help you with that! React is a powerful JavaScript library for building user interfaces. What specific aspect would you like to explore?",
-		reasoning:
-			"The user is asking about React, which is a broad topic. I should provide a helpful overview while asking for more specific information to give a more targeted response.",
-		sources: [
-			{ title: "React Official Documentation", url: "https://react.dev" },
-			{ title: "React Developer Tools", url: "https://react.dev/learn" },
-		],
-	},
-	{
-		content:
-			"Next.js is an excellent framework built on top of React that provides server-side rendering, static site generation, and many other powerful features out of the box.",
-		reasoning:
-			"The user mentioned Next.js, so I should explain its relationship to React and highlight its key benefits for modern web development.",
-		sources: [
-			{ title: "Next.js Documentation", url: "https://nextjs.org/docs" },
-			{
-				title: "Vercel Next.js Guide",
-				url: "https://vercel.com/guides/nextjs",
-			},
-		],
-	},
-	{
-		content:
-			"TypeScript adds static type checking to JavaScript, which helps catch errors early and improves code quality. It's particularly valuable in larger applications.",
-		reasoning:
-			"TypeScript is becoming increasingly important in modern development. I should explain its benefits while keeping the explanation accessible.",
-		sources: [
-			{
-				title: "TypeScript Handbook",
-				url: "https://www.typescriptlang.org/docs",
-			},
-			{
-				title: "TypeScript with React",
-				url: "https://react.dev/learn/typescript",
-			},
-		],
-	},
 ];
 const Example = () => {
 	const [messages, setMessages] = useState<ChatMessage[]>([
@@ -113,9 +71,6 @@ const Example = () => {
 	const [inputValue, setInputValue] = useState<string>("");
 	const [selectedModel, setSelectedModel] = useState(models[0].id);
 	const [isTyping, setIsTyping] = useState(false);
-	const [streamingMessageId, setStreamingMessageId] = useState<string | null>(
-		null
-	);
 
 	const simulateTyping = useCallback(
 		(
@@ -147,7 +102,6 @@ const Example = () => {
 				if (currentIndex >= content.length) {
 					clearInterval(typeInterval);
 					setIsTyping(false);
-					setStreamingMessageId(null);
 				}
 			}, 50);
 			return () => clearInterval(typeInterval);
@@ -169,30 +123,54 @@ const Example = () => {
 			setMessages((prev) => [...prev, userMessage]);
 			setInputValue("");
 			setIsTyping(true);
-			// Simulate AI response with delay
-			setTimeout(() => {
-				const responseData =
-					sampleResponses[Math.floor(Math.random() * sampleResponses.length)];
-				const assistantMessageId = nanoid();
 
-				const assistantMessage: ChatMessage = {
-					id: assistantMessageId,
-					content: "",
-					role: "assistant",
-					timestamp: new Date(),
-					isStreaming: true,
-				};
-				setMessages((prev) => [...prev, assistantMessage]);
-				setStreamingMessageId(assistantMessageId);
+			// Send request to AI API
+			const assistantMessageId = nanoid();
+			const assistantMessage: ChatMessage = {
+				id: assistantMessageId,
+				content: "",
+				role: "assistant",
+				timestamp: new Date(),
+				isStreaming: true,
+			};
+			setMessages((prev) => [...prev, assistantMessage]);
 
-				// Start typing simulation
-				simulateTyping(
-					assistantMessageId,
-					responseData.content,
-					responseData.reasoning,
-					responseData.sources
-				);
-			}, 800);
+			// Make API request
+			fetch("http://localhost:8000/ask", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					question: inputValue,
+				}),
+			})
+				.then((response) => response.json())
+				.then((data) => {
+					// Start typing simulation with the API response
+					simulateTyping(
+						assistantMessageId,
+						data.answer,
+						undefined, // No reasoning from API
+						undefined // No sources from API
+					);
+				})
+				.catch((error) => {
+					console.error("Error calling AI API:", error);
+					// Update message with error
+					setMessages((prev) =>
+						prev.map((msg) =>
+							msg.id === assistantMessageId
+								? {
+										...msg,
+										content: "Sorry, I encountered an error. Please try again.",
+										isStreaming: false,
+								  }
+								: msg
+						)
+					);
+					setIsTyping(false);
+				});
 		},
 		[inputValue, isTyping, simulateTyping]
 	);
@@ -212,7 +190,6 @@ const Example = () => {
 		]);
 		setInputValue("");
 		setIsTyping(false);
-		setStreamingMessageId(null);
 	}, []);
 	return (
 		<div className="flex h-full w-full flex-col overflow-hidden rounded-xl border bg-background shadow-sm">

@@ -22,7 +22,9 @@ vectordb:
   provider: chroma
   config:
     collection_name: pdf_rag_demo
-    dir: /Users/manme/Desktop/code/threepio-rag/chroma_store   # absolute path
+    # manmeet: /Users/manme/Desktop/code/threepio-rag/chroma_store
+    # saharsh: /Users/saharshsamir/Desktop/everything/code/threepio-rag/chroma_store
+    dir: /Users/saharshsamir/Desktop/everything/code/threepio-rag/chroma_store   # absolute path 
 
 chunker:
   chunk_size: 1200
