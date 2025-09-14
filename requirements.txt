@@ -5,6 +5,7 @@ uvicorn[standard]
 # RAG core
 embedchain
 chromadb>=0.5
+langchain-community
 
 # Models & uploads
 pydantic>=2.7,<3
