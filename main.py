@@ -7,10 +7,14 @@ from pydantic import BaseModel
 from embedchain import App
 import chromadb, logging
 
-SAHARSH_ROOT = "/Users/saharshsamir/Desktop/everything/code/threepio-rag"
-MANME_ROOT = "/Users/manme/Desktop/code/threepio-rag"
-CHROMA_DIR = MANME_ROOT + "/chroma_store"
-COLL_NAME  = "pdf_rag_demo"
+from settings import CHROMA_DIR, COLL_NAME
+
+print("Using chroma dir:", CHROMA_DIR)
+
+# SAHARSH_ROOT = "/Users/saharshsamir/Desktop/everything/code/threepio-rag"
+# MANME_ROOT = "/Users/manme/Desktop/code/threepio-rag"
+# CHROMA_DIR = MANME_ROOT + "/chroma_store"
+# COLL_NAME  = "pdf_rag_demo"
 
 # Create/load the RAG app
 ec_app = App.from_config(config_path="embedchain_config.yaml")
