@@ -1,11 +1,11 @@
 # API
-fastapi
-uvicorn[standard]
+# fastapi
+# uvicorn[standard]
 
 # RAG core
-embedchain
+# embedchain
 chromadb>=0.5
-langchain-community
+# langchain-community
 
 # Models & uploads
 pydantic>=2.7,<3
@@ -20,3 +20,9 @@ openai>=1.0
 # Optional: if you switch to a managed vector DB later, uncomment:
 # qdrant-client
 
+embedchain>=0.2.0
+langchain>=0.2.0
+langchain-community>=0.2.0
+fastapi>=0.111
+uvicorn[standard]>=0.30
+PyYAML>=6.0

@@ -9,6 +9,24 @@ import chromadb, logging
 
 from settings import CHROMA_DIR, COLL_NAME
 
+import yaml
+
+try:
+    # Newer docs path: App.from_config(config_path=...) or config=...
+    from embedchain import App as _App
+    if hasattr(_App, "from_config"):
+        App = _App
+        # If your file is YAML:
+        ec_app = App.from_config(config_path="embedchain_config.yaml")
+    else:
+        # Fallback to Pipeline API
+        from embedchain import Pipeline
+        ec_app = Pipeline.from_config(yaml_path="embedchain_config.yaml")
+except ImportError:
+    # Older builds may not have App at all
+    from embedchain import Pipeline
+    ec_app = Pipeline.from_config(yaml_path="embedchain_config.yaml")
+
 print("Using chroma dir:", CHROMA_DIR)
 
 # SAHARSH_ROOT = "/Users/saharshsamir/Desktop/everything/code/threepio-rag"
