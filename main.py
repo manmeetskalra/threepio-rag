@@ -9,17 +9,17 @@ import chromadb, logging
 
 SAHARSH_ROOT = "/Users/saharshsamir/Desktop/everything/code/threepio-rag"
 MANME_ROOT = "/Users/manme/Desktop/code/threepio-rag"
-CHROMA_DIR = SAHARSH_ROOT + "/chroma_store"
+CHROMA_DIR = MANME_ROOT + "/chroma_store"
 COLL_NAME  = "pdf_rag_demo"
 
 # Create/load the RAG app
 ec_app = App.from_config(config_path="embedchain_config.yaml")
 
 STRICT_SYSTEM = (
-    "You answer ONLY using the provided context snippets.\n"
-    "If the answer is not fully supported by the context, reply exactly: \"I don't know based on the provided PDF.\"\n"
-    "Never use outside knowledge. Quote short relevant lines when possible.\n"
-    "Return concise answers."
+    "You answer using the provided context snippets. "
+    "If the context contains relevant information, provide a helpful answer based on that information. "
+    "Only if the context is completely irrelevant or insufficient, reply: \"I don't know based on the provided PDF.\" "
+    "Quote relevant lines when possible and return concise answers."
 )
 
 app = FastAPI(title="PDF Q&A (Embedchain)")
