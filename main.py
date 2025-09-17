@@ -24,7 +24,7 @@ try:
         ec_app = Pipeline.from_config(yaml_path="embedchain_config.yaml")
 except ImportError:
     # Older builds may not have App at all
-    from embedchain import Pipeline
+    from embedchain import App as Pipeline
     ec_app = Pipeline.from_config(yaml_path="embedchain_config.yaml")
 
 print("Using chroma dir:", CHROMA_DIR)
