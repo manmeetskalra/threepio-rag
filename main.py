@@ -20,7 +20,7 @@ try:
         ec_app = App.from_config(config_path="embedchain_config.yaml")
     else:
         # Fallback to Pipeline API
-        from embedchain import Pipeline
+        from embedchain import App as Pipeline
         ec_app = Pipeline.from_config(yaml_path="embedchain_config.yaml")
 except ImportError:
     # Older builds may not have App at all
