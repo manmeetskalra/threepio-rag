@@ -8,22 +8,44 @@ from embedchain import App
 import chromadb, logging
 
 from settings import CHROMA_DIR, COLL_NAME
-
-from embedchain import App as ECApp
 import yaml
+from embedchain import App as ECApp
 
-# Build ec_app once, with runtime compatibility
+# Choose the best available constructor once
 try:
-    # Newer versions expose App.from_config(...)
+    # Preferred on newer releases
     ec_app = ECApp.from_config(config_path="embedchain_config.yaml")
 except AttributeError:
-    # Older versions: no from_config—fall back to manual init (or defaults)
-    # Option 1: just use defaults/env
-    ec_app = ECApp()
-    # Option 2: if your YAML holds fields ECApp(**cfg) understands, load & pass:
-    # with open("embedchain_config.yaml") as f:
-    #     cfg = yaml.safe_load(f) or {}
-    # ec_app = ECApp(**cfg)
+    # No .from_config on this App → try old Pipeline API
+    try:
+        from embedchain import Pipeline
+    except ImportError:
+        Pipeline = None
+
+    if Pipeline and hasattr(Pipeline, "from_config"):
+        ec_app = Pipeline.from_config(yaml_path="embedchain_config.yaml")
+    else:
+        # Last resort: construct a default App and rely on env vars
+        ec_app = ECApp()
+
+print("Embedchain initialized.")
+
+
+# from embedchain import App as ECApp
+# import yaml
+
+# # Build ec_app once, with runtime compatibility
+# try:
+#     # Newer versions expose App.from_config(...)
+#     ec_app = ECApp.from_config(config_path="embedchain_config.yaml")
+# except AttributeError:
+#     # Older versions: no from_config—fall back to manual init (or defaults)
+#     # Option 1: just use defaults/env
+#     ec_app = ECApp()
+#     # Option 2: if your YAML holds fields ECApp(**cfg) understands, load & pass:
+#     # with open("embedchain_config.yaml") as f:
+#     #     cfg = yaml.safe_load(f) or {}
+#     # ec_app = ECApp(**cfg)
 
 
 # import yaml
